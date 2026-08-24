@@ -49,10 +49,108 @@
   hyprKbLayout = layoutFromVariant;
   hyprKbVariant = variantFinal;
 
+  # Keybinds are authored as native records in binds.nix. Normalize the chord
+  # (modifier expansion, token canonicalization, numeric->keycode) here at build
+  # time so lua/keybinds.lua does no string parsing - it only maps the resolved
+  # dispatcher to hl.dsp.*. `modifier` mirrors zaneyosLuaConfig.modifier below.
+  modifier = "SUPER";
+  normalizeModToken = tok: let
+    l = lib.toLower tok;
+  in
+    if l == "super" || l == "mod4"
+    then "SUPER"
+    else if l == "shift"
+    then "SHIFT"
+    else if l == "ctrl" || l == "control"
+    then "CTRL"
+    else if l == "alt"
+    then "ALT"
+    else if l == "meta"
+    then "META"
+    else tok;
+  normalizeMods = mods: let
+    expanded = builtins.replaceStrings ["$modifier"] [modifier] (lib.strings.trim mods);
+    tokens = builtins.filter (t: t != "") (lib.splitString " " expanded);
+  in
+    lib.concatStringsSep " + " (map normalizeModToken tokens);
+  normalizeKey = key: let
+    k = lib.strings.trim key;
+  in
+    if builtins.match "[0-9]+" k != null && lib.toInt k > 9
+    then "code:${k}"
+    else k;
+  chord = mods: key: let
+    left = normalizeMods mods;
+    right = normalizeKey key;
+  in
+    if left == ""
+    then right
+    else if right == ""
+    then left
+    else "${left} + ${right}";
+  mkBind = b:
+    {
+      chord = chord (b.mods or "") (b.key or "");
+      dispatcher = b.dispatcher or "";
+      args = b.args or "";
+    }
+    // lib.optionalAttrs ((b.description or "") != "") {description = b.description;};
+
   bindSettings =
     (import ./binds.nix {inherit zaneyos;}).wayland.windowManager.hyprland.settings or {};
-  binddEntries = bindSettings.bindd or [];
-  bindmEntries = bindSettings.bindm or [];
+  binddRaw = bindSettings.bindd or [];
+  bindmRaw = bindSettings.bindm or [];
+  binddEntries = map mkBind binddRaw;
+  bindmEntries = map mkBind bindmRaw;
+
+  # Precomputed keybind index for the qs-keybinds search tool. Built from the
+  # same records so no tool scrapes binds.nix at runtime. Display keybind and
+  # category mirror the previous awk scraper's output (see keybinds-parser.nix).
+  anyInfix = needles: hay: lib.any (n: lib.hasInfix n hay) needles;
+  bindCategory = b: let
+    act = b.dispatcher or "";
+    low = lib.toLower "${act} ${b.args or ""} ${b.description or ""}";
+    isExec = act == "exec";
+    base =
+      if isExec && anyInfix ["kitty" "ghostty" "wezterm" "alacritty" "foot"] low
+      then "terminal"
+      else if isExec && anyInfix ["emacs" "code" "vscode" "editor"] low
+      then "editor"
+      else if isExec && anyInfix ["rofi" "wofi" "dmenu" "menu" "launcher"] low
+      then "launcher"
+      else if isExec && anyInfix ["screenshot" "screenshoot" "hyprshot"] low
+      then "screenshot"
+      else if isExec && lib.hasInfix "wallpaper" low
+      then "wallpaper"
+      else if isExec && anyInfix ["volume" "brightness" "audio" "xf86audio" "xf86monbrightness" "playerctl" "wpctl" "brightnessctl"] low
+      then "media"
+      else if isExec && anyInfix ["browser" "chrome" "firefox" "brave"] low
+      then "browser"
+      else if builtins.elem act ["workspace" "movetoworkspace"]
+      then "workspace"
+      else if builtins.elem act ["movewindow" "swapwindow" "movefocus" "killactive" "togglefloating" "fullscreen" "pseudo" "resizewindow"]
+      then "window"
+      else if builtins.elem act ["togglesplit" "cyclenext" "bringactivetotop" "exit" "workspaceopt"]
+      then "hyprland"
+      else if isExec
+      then "app"
+      else "hyprland";
+  in
+    if lib.hasPrefix "mouse:" (b.key or "")
+    then "mouse"
+    else base;
+  mkKeybindEntry = b: let
+    mods = builtins.replaceStrings ["$modifier"] [modifier] (b.mods or "");
+    key = b.key or "";
+  in {
+    keybind =
+      if mods != ""
+      then "${mods} + ${key}"
+      else key;
+    description = b.description or "";
+    category = bindCategory b;
+  };
+  keybindsIndex = map mkKeybindEntry binddRaw;
 
   envEntries = (import ./env.nix {}).wayland.windowManager.hyprland.settings.env or [];
   execOnceEntries = (
@@ -236,6 +334,8 @@ in {
     };
     ".face.icon".source = ./face.jpg;
     ".config/face.jpg".source = ./face.jpg;
+    # Precomputed keybind index consumed by qs-keybinds (keybinds-parser.nix).
+    ".config/zaneyos/keybinds.json".text = builtins.toJSON keybindsIndex;
   };
   wayland.windowManager.hyprland = {
     configType = "lua";

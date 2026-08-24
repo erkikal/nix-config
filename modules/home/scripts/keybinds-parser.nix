@@ -8,74 +8,12 @@ pkgs.writeShellScriptBin "keybinds-parser" ''
 
     case "$MODE" in
       hyprland)
-        # First, try to parse zaneyos bindd entries from Nix config for richer descriptions
-        BIND_NIX="$HOME/zaneyos/modules/home/hyprland/binds.nix"
-        if [[ -f "$BIND_NIX" ]] && ${pkgs.gnugrep}/bin/grep -q "bindd[ ]*=" "$BIND_NIX"; then
-        ${pkgs.gawk}/bin/awk '
-  BEGIN {
-              print "["; first=1; in_block=0; btype="";
-            }
-            {
-              line=$0
-              # Strip trailing comments that are outside of quotes
-              gsub(/#[^"]*$/, "", line)
-            }
-          /bindd[ ]*=/ { in_block=1; btype="bindd"; next }
-            /bindmd[ ]*=/ { in_block=1; btype="bindmd"; next }
-            in_block {
-              if (line ~ /\]/) { in_block=0; next }
-              # Find first quoted string on the line
-              if (match(line, /"(.*)"/, m)) {
-                s=m[1]
-                # Split by comma into up to 5 pieces: mods, key, desc, action, params (rest)
-                n=split(s, parts, ",")
-                # Trim helper
-                for (i=1; i<=n; i++) {
-                  gsub(/^ +| +$/, "", parts[i])
-                }
-                mods = (n>=1?parts[1]:"")
-                key  = (n>=2?parts[2]:"")
-                desc = (n>=3?parts[3]:"")
-                act  = (n>=4?parts[4]:"")
-                params=""
-                if (n>=5) {
-                  params = parts[5]
-                  for (i=6; i<=n; i++) params = params "," parts[i]
-                  gsub(/^ +| +$/, "", params)
-                }
-                # Normalize display keybind
-                display = key
-                if (mods != "") display = mods " + " key
-                gsub(/\$modifier/, "SUPER", display)
-
-                # Category classification (reuse hyprland categories)
-                category = "hyprland"
-                low=tolower(act " " params " " desc)
-                if (act == "exec" && low ~ /(kitty|ghostty|wezterm|alacritty|foot)/) category="terminal"
-                else if (act == "exec" && low ~ /(emacs|code|vscode|editor)/) category="editor"
-                else if (act == "exec" && low ~ /(rofi|wofi|dmenu|menu|launcher)/) category="launcher"
-                else if (act == "exec" && low ~ /(screenshot|screenshoot|hyprshot)/) category="screenshot"
-                else if (act == "exec" && low ~ /wallpaper/) category="wallpaper"
-                else if (act == "exec" && low ~ /(volume|brightness|audio|xf86audio|xf86monbrightness|playerctl|wpctl|brightnessctl)/) category="media"
-                else if (act == "exec" && low ~ /(browser|chrome|firefox|brave)/) category="browser"
-                else if (act ~ /^(workspace|movetoworkspace)$/) category = "workspace"
-  else if (act ~ /^(movewindow|swapwindow|movefocus|killactive|togglefloating|fullscreen|pseudo|resizewindow)$/) category = "window"
-  else if (act ~ /^(togglesplit|cyclenext|bringactivetotop|exit|workspaceopt)$/) category = "hyprland"
-                else if (act == "exec") category = "app"
-                # Override category for mouse bindings
-                if (key ~ /^mouse:/) category = "mouse"
-
-                # JSON escape fields
-                gsub(/\\/, "\\\\", display); gsub(/"/, "\\\"", display)
-                gsub(/\\/, "\\\\", desc);    gsub(/"/, "\\\"", desc)
-                gsub(/\\/, "\\\\", category); gsub(/"/, "\\\"", category)
-
-                if (!first) printf ",\n"; first=0
-                printf "{\"keybind\":\"%s\",\"description\":\"%s\",\"category\":\"%s\"}", display, desc, category
-              }
-            }
-            END { print "\n]" }
-          ' "$BIND_NIX"
+        # Prefer the precomputed keybind index generated at build time from the
+        # structured binds (see modules/home/hyprland/hyprland.nix); the tool no
+        # longer scrapes binds.nix, so there is no runtime parsing here.
+        KEYBINDS_JSON="$HOME/.config/zaneyos/keybinds.json"
+        if [[ -f "$KEYBINDS_JSON" ]]; then
+          ${pkgs.coreutils}/bin/cat "$KEYBINDS_JSON"
         else
           # Parse actual Hyprland config file
           HYPR_CONFIG="$HOME/.config/hypr/hyprland.conf"

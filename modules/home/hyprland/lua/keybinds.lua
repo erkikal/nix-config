@@ -1,86 +1,13 @@
 local cfg = ZANEYOS or {}
-local modifier = cfg.modifier or "SUPER"
 local bindd_entries = cfg.bindd or {}
 local bindm_entries = cfg.bindm or {}
 
+-- Chords, modifier expansion and keycode conversion are precomputed in Nix
+-- (see hyprland.nix); each entry arrives as { chord, dispatcher, args,
+-- description? }. This file only maps the resolved dispatcher to hl.dsp.*.
+
 local function trim(value)
   return (value or ""):gsub("^%s+", ""):gsub("%s+$", "")
-end
-local function normalize_modifier_token(token)
-  local lowered = trim(token):lower()
-  if lowered == "" then
-    return ""
-  end
-  if lowered == "super" or lowered == "mod4" then
-    return "SUPER"
-  end
-  if lowered == "shift" then
-    return "SHIFT"
-  end
-  if lowered == "ctrl" or lowered == "control" then
-    return "CTRL"
-  end
-  if lowered == "alt" then
-    return "ALT"
-  end
-  if lowered == "meta" then
-    return "META"
-  end
-  return trim(token)
-end
-
-local function normalize_mods(mods)
-  local expanded = trim(mods):gsub("%$modifier", modifier)
-  local tokens = {}
-  for token in expanded:gmatch("%S+") do
-    table.insert(tokens, normalize_modifier_token(token))
-  end
-  return table.concat(tokens, " + ")
-end
-
-local function normalize_key(key)
-  local cleaned = trim(key or "")
-  if cleaned:match("^%d+$") then
-    local numeric = tonumber(cleaned)
-    if numeric and numeric > 9 then
-      return "code:" .. tostring(numeric)
-    end
-  end
-  return cleaned
-end
-
-local function chord(mods, key)
-  local left = normalize_mods(mods or "")
-  local right = normalize_key(key or "")
-  if left == "" then
-    return right
-  end
-  if right == "" then
-    return left
-  end
-  return left .. " + " .. right
-end
-
-local function split_entry(entry, max_parts)
-  local value = tostring(entry or "")
-  local limit = max_parts or math.huge
-  local parts = {}
-  local current = ""
-  local index = 1
-
-  for i = 1, #value do
-    local char = value:sub(i, i)
-    if char == "," and index < limit then
-      parts[index] = trim(current)
-      current = ""
-      index = index + 1
-    else
-      current = current .. char
-    end
-  end
-
-  parts[index] = trim(current)
-  return parts
 end
 
 local function direction(value)
@@ -272,78 +199,49 @@ local function dispatch_cmd(dispatcher, args)
   return function() end
 end
 
-local function bindd(mods, key, description, dispatcher, args, opts)
-  local action
-  if dispatcher == "exec" then
-    action = exec_cmd(args or "")
-  else
-    action = dispatch_cmd(dispatcher or "", args or "")
-  end
-
-  local bind_opts = opts or {}
-  if description and description ~= "" then
-    bind_opts.description = description
-  end
-  if next(bind_opts) == nil then
-    bind_opts = nil
-  end
-
-  hl.bind(chord(mods, key), action, bind_opts)
-end
-
-local function bindm(mods, key, description, dispatcher, args)
-  local action
-  if dispatcher == "movewindow" and hl.dsp and hl.dsp.window and hl.dsp.window.drag then
-    action = hl.dsp.window.drag()
-  elseif (dispatcher == "resizeactive" or dispatcher == "resizewindow")
-    and hl.dsp
-    and hl.dsp.window
-    and hl.dsp.window.resize
-  then
-    action = hl.dsp.window.resize()
-  else
-    action = dispatch_cmd(dispatcher or "", args or "")
-  end
-
-  local bind_opts = { mouse = true }
-  if description and description ~= "" then
-    bind_opts.description = description
-  end
-
-  hl.bind(chord(mods, key), action, bind_opts)
-end
-
 for _, entry in ipairs(bindd_entries) do
-  local parts = split_entry(entry, 5)
-  local mods = parts[1] or ""
-  local key = parts[2] or ""
-  local description = parts[3] or ""
-  local dispatcher = parts[4] or ""
-  local args = parts[5] or ""
+  local dispatcher = entry.dispatcher or ""
+  if entry.chord and entry.chord ~= "" and dispatcher ~= "" then
+    local action
+    if dispatcher == "exec" then
+      action = exec_cmd(entry.args or "")
+    else
+      action = dispatch_cmd(dispatcher, entry.args or "")
+    end
 
-  if key ~= "" and dispatcher ~= "" then
-    bindd(mods, key, description, dispatcher, args)
+    local opts = {}
+    if entry.description and entry.description ~= "" then
+      opts.description = entry.description
+    end
+    if next(opts) == nil then
+      opts = nil
+    end
+
+    hl.bind(entry.chord, action, opts)
   end
 end
 
 for _, entry in ipairs(bindm_entries) do
-  local parts = split_entry(entry, 5)
-  local mods = parts[1] or ""
-  local key = parts[2] or ""
-  local description = ""
-  local dispatcher = ""
-  local args = ""
+  local dispatcher = entry.dispatcher or ""
+  if entry.chord and entry.chord ~= "" and dispatcher ~= "" then
+    local action
+    if dispatcher == "movewindow" and hl.dsp and hl.dsp.window and hl.dsp.window.drag then
+      action = hl.dsp.window.drag()
+    elseif (dispatcher == "resizeactive" or dispatcher == "resizewindow")
+      and hl.dsp
+      and hl.dsp.window
+      and hl.dsp.window.resize
+    then
+      action = hl.dsp.window.resize()
+    else
+      action = dispatch_cmd(dispatcher, entry.args or "")
+    end
 
-  if parts[4] and parts[4] ~= "" then
-    description = parts[3] or ""
-    dispatcher = parts[4] or ""
-    args = parts[5] or ""
-  else
-    dispatcher = parts[3] or ""
-    args = parts[4] or ""
-  end
+    local opts = { mouse = true }
+    if entry.description and entry.description ~= "" then
+      opts.description = entry.description
+    end
 
-  if key ~= "" and dispatcher ~= "" then
-    bindm(mods, key, description, dispatcher, args)
+    hl.bind(entry.chord, action, opts)
   end
 end

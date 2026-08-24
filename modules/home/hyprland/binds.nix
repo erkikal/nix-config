@@ -5,37 +5,42 @@
     browser
     terminal
     ;
+  # Each bind is a native record: mods/key are authored as plain strings (mods
+  # may contain "$modifier"); the chord is normalized once in Nix at build time
+  # (see hyprland.nix). dispatcher "exec" runs args as a command, otherwise
+  # dispatcher/args map to hl.dsp.* in lua/keybinds.lua. `args` defaults to "".
+
   # Noctalia-specific bindings (only included when barChoice == "noctalia")
   noctaliaBind =
     if barChoice == "noctalia"
     then [
-      "$modifier,SPACE, Noctalia Launcher, exec, noctalia msg panel-toggle launcher"
-      "$modifier SHIFT,Return, Noctalia Launcher, exec, noctalia msg panel-toggle launcher"
-      "$modifier,M, Noctalia Notifications, exec, noctalia msg panel-toggle control-center notifications"
-      "$modifier,V, Noctalia Clipboard, exec, noctalia msg panel-toggle clipboard"
-      "$modifier ALT,P, Noctalia Settings, exec, noctalia msg settings-toggle"
-      "$modifier SHIFT,comma, Noctalia Settings, exec, noctalia msg settings-toggle"
-      "$modifier CTRL,L, Noctalia Lock Screen, exec, noctalia msg session lock"
-      "$modifier SHIFT,W, Noctalia Wallpaper, exec, noctalia msg panel-toggle wallpaper"
-      "$modifier,X, Noctalia Power Menu, exec, noctalia msg panel-toggle session"
-      "$modifier,C, Noctalia Control Center, exec, noctalia msg panel-toggle control-center"
-      "$modifier CTRL,R, Noctalia Screenshot Region, exec, noctalia msg screenshot-region"
-      "$modifier SHIFT,R, Restart Noctalia shell, exec, restart.noctalia"
+      {mods = "$modifier"; key = "SPACE"; description = "Noctalia Launcher"; dispatcher = "exec"; args = "noctalia msg panel-toggle launcher";}
+      {mods = "$modifier SHIFT"; key = "Return"; description = "Noctalia Launcher"; dispatcher = "exec"; args = "noctalia msg panel-toggle launcher";}
+      {mods = "$modifier"; key = "M"; description = "Noctalia Notifications"; dispatcher = "exec"; args = "noctalia msg panel-toggle control-center notifications";}
+      {mods = "$modifier"; key = "V"; description = "Noctalia Clipboard"; dispatcher = "exec"; args = "noctalia msg panel-toggle clipboard";}
+      {mods = "$modifier ALT"; key = "P"; description = "Noctalia Settings"; dispatcher = "exec"; args = "noctalia msg settings-toggle";}
+      {mods = "$modifier SHIFT"; key = "comma"; description = "Noctalia Settings"; dispatcher = "exec"; args = "noctalia msg settings-toggle";}
+      {mods = "$modifier CTRL"; key = "L"; description = "Noctalia Lock Screen"; dispatcher = "exec"; args = "noctalia msg session lock";}
+      {mods = "$modifier SHIFT"; key = "W"; description = "Noctalia Wallpaper"; dispatcher = "exec"; args = "noctalia msg panel-toggle wallpaper";}
+      {mods = "$modifier"; key = "X"; description = "Noctalia Power Menu"; dispatcher = "exec"; args = "noctalia msg panel-toggle session";}
+      {mods = "$modifier"; key = "C"; description = "Noctalia Control Center"; dispatcher = "exec"; args = "noctalia msg panel-toggle control-center";}
+      {mods = "$modifier CTRL"; key = "R"; description = "Noctalia Screenshot Region"; dispatcher = "exec"; args = "noctalia msg screenshot-region";}
+      {mods = "$modifier SHIFT"; key = "R"; description = "Restart Noctalia shell"; dispatcher = "exec"; args = "restart.noctalia";}
     ]
     else [];
   # Rofi launcher bindings (only included when barChoice != "noctalia")
   rofiBind =
     if barChoice != "noctalia"
     then [
-      "$modifier,SPACE, Rofi Launcher, exec, rofi-launcher"
-      "$modifier SHIFT,Return, Rofi Launcher, exec, rofi-launcher"
+      {mods = "$modifier"; key = "SPACE"; description = "Rofi Launcher"; dispatcher = "exec"; args = "rofi-launcher";}
+      {mods = "$modifier SHIFT"; key = "Return"; description = "Rofi Launcher"; dispatcher = "exec"; args = "rofi-launcher";}
     ]
     else [];
   # Rofi clipboard binding (only included when barChoice != "noctalia")
   rofiClipboardBind =
     if barChoice != "noctalia"
     then [
-      "$modifier,V, Clipboard History, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+      {mods = "$modifier"; key = "V"; description = "Clipboard History"; dispatcher = "exec"; args = "cliphist list | rofi -dmenu | cliphist decode | wl-copy";}
     ]
     else [];
 in {
@@ -46,127 +51,126 @@ in {
       ++ rofiClipboardBind
       ++ [
         # ============= WORKSPACE OVERVIEW =============
-        "$modifier CTRL,D, Toggle Dock, exec, dock"
-        "$modifier, TAB, QS Overview, exec, qs ipc -c overview call overview toggle"
+        {mods = "$modifier CTRL"; key = "D"; description = "Toggle Dock"; dispatcher = "exec"; args = "dock";}
+        {mods = "$modifier"; key = "TAB"; description = "QS Overview"; dispatcher = "exec"; args = "qs ipc -c overview call overview toggle";}
         # ============= TERMINALS =============
-        "$modifier,Return, Terminal, exec, ${terminal}"
+        {mods = "$modifier"; key = "Return"; description = "Terminal"; dispatcher = "exec"; args = "${terminal}";}
         # ============= APPLICATION LAUNCHERS =============
-        "$modifier,K, Keybinds Search Tool, exec, qs-keybinds"
-        "$modifier CTRL,C, Cheatsheets Viewer, exec, qs-cheatsheets"
-        "$modifier SHIFT,K, Keybinds Search Tool, exec, qs-keybinds"
-        "$modifier SHIFT,D, Discord, exec, discord"
-        "$modifier ALT,W, Web Search, exec, web-search"
-        "$modifier SHIFT,W, QS Wallpaper Setter, exec, qs-wallpapers-apply"
-        "$modifier SHIFT,N, Notification Reset, exec, swaync-client -rs"
-        "$modifier,W, Web Browser, exec, ${browser}"
-        "$modifier,Y, File Manager, exec, ${terminal} -e yazi"
-        "$modifier,E, Emoji Picker, exec, emopicker9000"
-        "$modifier,S, Screenshot, exec, screenshootin"
+        {mods = "$modifier CTRL"; key = "C"; description = "Cheatsheets Viewer"; dispatcher = "exec"; args = "qs-cheatsheets";}
+        {mods = "$modifier SHIFT"; key = "K"; description = "Keybinds Search Tool"; dispatcher = "exec"; args = "qs-keybinds";}
+        {mods = "$modifier SHIFT"; key = "D"; description = "Discord"; dispatcher = "exec"; args = "discord";}
+        {mods = "$modifier ALT"; key = "W"; description = "Web Search"; dispatcher = "exec"; args = "web-search";}
+        {mods = "$modifier SHIFT"; key = "W"; description = "QS Wallpaper Setter"; dispatcher = "exec"; args = "qs-wallpapers-apply";}
+        {mods = "$modifier SHIFT"; key = "N"; description = "Notification Reset"; dispatcher = "exec"; args = "swaync-client -rs";}
+        {mods = "$modifier"; key = "W"; description = "Web Browser"; dispatcher = "exec"; args = "${browser}";}
+        {mods = "$modifier"; key = "Y"; description = "File Manager"; dispatcher = "exec"; args = "${terminal} -e yazi";}
+        {mods = "$modifier"; key = "E"; description = "Emoji Picker"; dispatcher = "exec"; args = "emopicker9000";}
+        {mods = "$modifier"; key = "S"; description = "Screenshot"; dispatcher = "exec"; args = "screenshootin";}
         # ============= SCREENSHOTS =============
-        "$modifier CTRL,S, Screenshot Output, exec, hyprshot -m output -o $HOME/Pictures/ScreenShots"
-        "$modifier SHIFT,S, Screenshot Window, exec, hyprshot -m window -o $HOME/Pictures/ScreenShots"
-        "$modifier ALT,S, Screenshot Region, exec, hyprshot -m region -o $HOME/Pictures/ScreenShots"
-        "$modifier,O, OBS Studio, exec, obs"
-        "$modifier ALT,C, Color Picker, exec, hyprpicker -a"
-        "$modifier,G, GIMP, exec, gimp"
-        "$modifier SHIFT,T, Dropdown Terminal, exec, sh -lc 'DropTerminal'"
-        "$modifier,T, Thunar, exec, thunar"
-        "$modifier ALT,M, Audio Control, exec, pavucontrol"
+        {mods = "$modifier CTRL"; key = "S"; description = "Screenshot Output"; dispatcher = "exec"; args = "hyprshot -m output -o $HOME/Pictures/ScreenShots";}
+        {mods = "$modifier SHIFT"; key = "S"; description = "Screenshot Window"; dispatcher = "exec"; args = "hyprshot -m window -o $HOME/Pictures/ScreenShots";}
+        {mods = "$modifier ALT"; key = "S"; description = "Screenshot Region"; dispatcher = "exec"; args = "hyprshot -m region -o $HOME/Pictures/ScreenShots";}
+        {mods = "$modifier"; key = "O"; description = "OBS Studio"; dispatcher = "exec"; args = "obs";}
+        {mods = "$modifier ALT"; key = "C"; description = "Color Picker"; dispatcher = "exec"; args = "hyprpicker -a";}
+        {mods = "$modifier"; key = "G"; description = "GIMP"; dispatcher = "exec"; args = "gimp";}
+        {mods = "$modifier SHIFT"; key = "T"; description = "Dropdown Terminal"; dispatcher = "exec"; args = "sh -lc 'DropTerminal'";}
+        {mods = "$modifier"; key = "T"; description = "Thunar"; dispatcher = "exec"; args = "thunar";}
+        {mods = "$modifier ALT"; key = "M"; description = "Audio Control"; dispatcher = "exec"; args = "pavucontrol";}
         # ============= WINDOW MANAGEMENT =============
-        "$modifier,Q, Kill Active Window, killactive,"
-        "$modifier,P, Pseudo Tile, pseudo,"
-        "$modifier SHIFT,I, Toggle Split, layoutmsg, togglesplit"
-        "$modifier,F, Maximize, fullscreen,"
-        "$modifier SHIFT,F, Toggle Floating, togglefloating,"
-        "$modifier ALT,F, Float All Windows, exec, hyprland-float-all"
+        {mods = "$modifier"; key = "Q"; description = "Kill Active Window"; dispatcher = "killactive";}
+        {mods = "$modifier"; key = "P"; description = "Pseudo Tile"; dispatcher = "pseudo";}
+        {mods = "$modifier SHIFT"; key = "I"; description = "Toggle Split"; dispatcher = "layoutmsg"; args = "togglesplit";}
+        {mods = "$modifier"; key = "F"; description = "Maximize"; dispatcher = "fullscreen";}
+        {mods = "$modifier SHIFT"; key = "F"; description = "Toggle Floating"; dispatcher = "togglefloating";}
+        {mods = "$modifier ALT"; key = "F"; description = "Float All Windows"; dispatcher = "exec"; args = "hyprland-float-all";}
         # ============= LAYOUTS =============
-        "$modifier ALT,L, Toggle Layouts, exec, hyprland-change-layout toggle"
-        "$modifier ALT,1, Layout Dwindle, exec, hyprland-change-layout dwindle"
-        "$modifier ALT,2, Layout Master, exec, hyprland-change-layout master"
-        "$modifier ALT,3, Layout Scrolling, exec, hyprland-change-layout scrolling"
-        "$modifier ALT,4, Layout Monocle, exec, hyprland-change-layout monocle"
-        "$modifier SHIFT,C, Exit/Logout of Hyprland, exit,"
+        {mods = "$modifier ALT"; key = "L"; description = "Toggle Layouts"; dispatcher = "exec"; args = "hyprland-change-layout toggle";}
+        {mods = "$modifier ALT"; key = "1"; description = "Layout Dwindle"; dispatcher = "exec"; args = "hyprland-change-layout dwindle";}
+        {mods = "$modifier ALT"; key = "2"; description = "Layout Master"; dispatcher = "exec"; args = "hyprland-change-layout master";}
+        {mods = "$modifier ALT"; key = "3"; description = "Layout Scrolling"; dispatcher = "exec"; args = "hyprland-change-layout scrolling";}
+        {mods = "$modifier ALT"; key = "4"; description = "Layout Monocle"; dispatcher = "exec"; args = "hyprland-change-layout monocle";}
+        {mods = "$modifier SHIFT"; key = "C"; description = "Exit/Logout of Hyprland"; dispatcher = "exit";}
         # ============= WINDOW MOVEMENT (ARROW KEYS) =============
-        "$modifier SHIFT,left, Move Left, movewindow, l"
-        "$modifier SHIFT,right, Move Right, movewindow, r"
-        "$modifier SHIFT,up, Move Up, movewindow, u"
-        "$modifier SHIFT,down, Move Down, movewindow, d"
+        {mods = "$modifier SHIFT"; key = "left"; description = "Move Left"; dispatcher = "movewindow"; args = "l";}
+        {mods = "$modifier SHIFT"; key = "right"; description = "Move Right"; dispatcher = "movewindow"; args = "r";}
+        {mods = "$modifier SHIFT"; key = "up"; description = "Move Up"; dispatcher = "movewindow"; args = "u";}
+        {mods = "$modifier SHIFT"; key = "down"; description = "Move Down"; dispatcher = "movewindow"; args = "d";}
         # ============= WINDOW MOVEMENT (VI STYLE) =============
-        "$modifier SHIFT,h, Move Left (VI), movewindow, l"
-        "$modifier SHIFT,l, Move Right (VI), movewindow, r"
-        "$modifier SHIFT,k, Move Up (VI), movewindow, u"
-        "$modifier SHIFT,j, Move Down (VI), movewindow, d"
+        {mods = "$modifier SHIFT"; key = "h"; description = "Move Left (VI)"; dispatcher = "movewindow"; args = "l";}
+        {mods = "$modifier SHIFT"; key = "l"; description = "Move Right (VI)"; dispatcher = "movewindow"; args = "r";}
+        {mods = "$modifier SHIFT"; key = "k"; description = "Move Up (VI)"; dispatcher = "movewindow"; args = "u";}
+        {mods = "$modifier SHIFT"; key = "j"; description = "Move Down (VI)"; dispatcher = "movewindow"; args = "d";}
         # ============= WINDOW SWAPPING (ARROW KEYS) =============
-        "$modifier ALT, left, Swap Left, swapwindow, l"
-        "$modifier ALT, right, Swap Right, swapwindow, r"
-        "$modifier ALT, up, Swap Up, swapwindow, u"
-        "$modifier ALT, down, Swap Down, swapwindow, d"
+        {mods = "$modifier ALT"; key = "left"; description = "Swap Left"; dispatcher = "swapwindow"; args = "l";}
+        {mods = "$modifier ALT"; key = "right"; description = "Swap Right"; dispatcher = "swapwindow"; args = "r";}
+        {mods = "$modifier ALT"; key = "up"; description = "Swap Up"; dispatcher = "swapwindow"; args = "u";}
+        {mods = "$modifier ALT"; key = "down"; description = "Swap Down"; dispatcher = "swapwindow"; args = "d";}
         # ============= WINDOW SWAPPING (VI KEYCODES) =============
-        "$modifier ALT, 43, Swap Left (VI), swapwindow, l"
-        "$modifier ALT, 46, Swap Right (VI), swapwindow, r"
-        "$modifier ALT, 45, Swap Up (VI), swapwindow, u"
-        "$modifier ALT, 44, Swap Down (VI), swapwindow, d"
+        {mods = "$modifier ALT"; key = "43"; description = "Swap Left (VI)"; dispatcher = "swapwindow"; args = "l";}
+        {mods = "$modifier ALT"; key = "46"; description = "Swap Right (VI)"; dispatcher = "swapwindow"; args = "r";}
+        {mods = "$modifier ALT"; key = "45"; description = "Swap Up (VI)"; dispatcher = "swapwindow"; args = "u";}
+        {mods = "$modifier ALT"; key = "44"; description = "Swap Down (VI)"; dispatcher = "swapwindow"; args = "d";}
         # ============= FOCUS MOVEMENT (ARROW KEYS) =============
-        "$modifier,left, Focus Left, movefocus, l"
-        "$modifier,right, Focus Right, movefocus, r"
-        "$modifier,up, Focus Up, movefocus, u"
-        "$modifier,down, Focus Down, movefocus, d"
+        {mods = "$modifier"; key = "left"; description = "Focus Left"; dispatcher = "movefocus"; args = "l";}
+        {mods = "$modifier"; key = "right"; description = "Focus Right"; dispatcher = "movefocus"; args = "r";}
+        {mods = "$modifier"; key = "up"; description = "Focus Up"; dispatcher = "movefocus"; args = "u";}
+        {mods = "$modifier"; key = "down"; description = "Focus Down"; dispatcher = "movefocus"; args = "d";}
         # ============= FOCUS MOVEMENT (VI STYLE) =============
-        "$modifier,h, Focus Left (VI), movefocus, l"
-        "$modifier,l, Focus Right (VI), movefocus, r"
-        "$modifier,k, Focus Up (VI), movefocus, u"
-        "$modifier,j, Focus Down (VI), movefocus, d"
+        {mods = "$modifier"; key = "h"; description = "Focus Left (VI)"; dispatcher = "movefocus"; args = "l";}
+        {mods = "$modifier"; key = "l"; description = "Focus Right (VI)"; dispatcher = "movefocus"; args = "r";}
+        {mods = "$modifier"; key = "k"; description = "Focus Up (VI)"; dispatcher = "movefocus"; args = "u";}
+        {mods = "$modifier"; key = "j"; description = "Focus Down (VI)"; dispatcher = "movefocus"; args = "d";}
         # ============= WORKSPACE SWITCHING (1-10) =============
-        "$modifier,1, Workspace 1, workspace, 1"
-        "$modifier,2, Workspace 2, workspace, 2"
-        "$modifier,3, Workspace 3, workspace, 3"
-        "$modifier,4, Workspace 4, workspace, 4"
-        "$modifier,5, Workspace 5, workspace, 5"
-        "$modifier,6, Workspace 6, workspace, 6"
-        "$modifier,7, Workspace 7, workspace, 7"
-        "$modifier,8, Workspace 8, workspace, 8"
-        "$modifier,9, Workspace 9, workspace, 9"
-        "$modifier,0, Workspace 10, workspace, 10"
+        {mods = "$modifier"; key = "1"; description = "Workspace 1"; dispatcher = "workspace"; args = "1";}
+        {mods = "$modifier"; key = "2"; description = "Workspace 2"; dispatcher = "workspace"; args = "2";}
+        {mods = "$modifier"; key = "3"; description = "Workspace 3"; dispatcher = "workspace"; args = "3";}
+        {mods = "$modifier"; key = "4"; description = "Workspace 4"; dispatcher = "workspace"; args = "4";}
+        {mods = "$modifier"; key = "5"; description = "Workspace 5"; dispatcher = "workspace"; args = "5";}
+        {mods = "$modifier"; key = "6"; description = "Workspace 6"; dispatcher = "workspace"; args = "6";}
+        {mods = "$modifier"; key = "7"; description = "Workspace 7"; dispatcher = "workspace"; args = "7";}
+        {mods = "$modifier"; key = "8"; description = "Workspace 8"; dispatcher = "workspace"; args = "8";}
+        {mods = "$modifier"; key = "9"; description = "Workspace 9"; dispatcher = "workspace"; args = "9";}
+        {mods = "$modifier"; key = "0"; description = "Workspace 10"; dispatcher = "workspace"; args = "10";}
         # ============= MOVE WINDOW TO WORKSPACE (1-10) =============
-        "$modifier CTRL SHIFT,SPACE, Move to Special, movetoworkspace, special"
-        "$modifier SHIFT,SPACE, Toggle Special, togglespecialworkspace"
-        "$modifier SHIFT,1, Move to Workspace 1, movetoworkspace, 1"
-        "$modifier SHIFT,2, Move to Workspace 2, movetoworkspace, 2"
-        "$modifier SHIFT,3, Move to Workspace 3, movetoworkspace, 3"
-        "$modifier SHIFT,4, Move to Workspace 4, movetoworkspace, 4"
-        "$modifier SHIFT,5, Move to Workspace 5, movetoworkspace, 5"
-        "$modifier SHIFT,6, Move to Workspace 6, movetoworkspace, 6"
-        "$modifier SHIFT,7, Move to Workspace 7, movetoworkspace, 7"
-        "$modifier SHIFT,8, Move to Workspace 8, movetoworkspace, 8"
-        "$modifier SHIFT,9, Move to Workspace 9, movetoworkspace, 9"
-        "$modifier SHIFT,0, Move to Workspace 10, movetoworkspace, 10"
+        {mods = "$modifier CTRL SHIFT"; key = "SPACE"; description = "Move to Special"; dispatcher = "movetoworkspace"; args = "special";}
+        {mods = "$modifier SHIFT"; key = "SPACE"; description = "Toggle Special"; dispatcher = "togglespecialworkspace";}
+        {mods = "$modifier SHIFT"; key = "1"; description = "Move to Workspace 1"; dispatcher = "movetoworkspace"; args = "1";}
+        {mods = "$modifier SHIFT"; key = "2"; description = "Move to Workspace 2"; dispatcher = "movetoworkspace"; args = "2";}
+        {mods = "$modifier SHIFT"; key = "3"; description = "Move to Workspace 3"; dispatcher = "movetoworkspace"; args = "3";}
+        {mods = "$modifier SHIFT"; key = "4"; description = "Move to Workspace 4"; dispatcher = "movetoworkspace"; args = "4";}
+        {mods = "$modifier SHIFT"; key = "5"; description = "Move to Workspace 5"; dispatcher = "movetoworkspace"; args = "5";}
+        {mods = "$modifier SHIFT"; key = "6"; description = "Move to Workspace 6"; dispatcher = "movetoworkspace"; args = "6";}
+        {mods = "$modifier SHIFT"; key = "7"; description = "Move to Workspace 7"; dispatcher = "movetoworkspace"; args = "7";}
+        {mods = "$modifier SHIFT"; key = "8"; description = "Move to Workspace 8"; dispatcher = "movetoworkspace"; args = "8";}
+        {mods = "$modifier SHIFT"; key = "9"; description = "Move to Workspace 9"; dispatcher = "movetoworkspace"; args = "9";}
+        {mods = "$modifier SHIFT"; key = "0"; description = "Move to Workspace 10"; dispatcher = "movetoworkspace"; args = "10";}
         # ============= WORKSPACE NAVIGATION =============
-        "$modifier CONTROL,right, Next Workspace, workspace, e+1"
-        "$modifier CONTROL,left, Previous Workspace, workspace, e-1"
-        "$modifier CONTROL,l, Next Workspace, workspace, e+1"
-        "$modifier CONTROL,h, Previous Workspace, workspace, e-1"
-        "$modifier,mouse_down, Next Workspace Mouse, workspace, e+1"
-        "$modifier,mouse_up, Previous Workspace Mouse, workspace, e-1"
-        "$modifier SHIFT CONTROL,l, Workspace to Next, movecurrentworkspacetomonitor, +1"
-        "$modifier SHIFT CONTROL,h, Workspace to Previous, movecurrentworkspacetomonitor, -1"
+        {mods = "$modifier CONTROL"; key = "right"; description = "Next Workspace"; dispatcher = "workspace"; args = "e+1";}
+        {mods = "$modifier CONTROL"; key = "left"; description = "Previous Workspace"; dispatcher = "workspace"; args = "e-1";}
+        {mods = "$modifier CONTROL"; key = "l"; description = "Next Workspace"; dispatcher = "workspace"; args = "e+1";}
+        {mods = "$modifier CONTROL"; key = "h"; description = "Previous Workspace"; dispatcher = "workspace"; args = "e-1";}
+        {mods = "$modifier"; key = "mouse_down"; description = "Next Workspace Mouse"; dispatcher = "workspace"; args = "e+1";}
+        {mods = "$modifier"; key = "mouse_up"; description = "Previous Workspace Mouse"; dispatcher = "workspace"; args = "e-1";}
+        {mods = "$modifier SHIFT CONTROL"; key = "l"; description = "Workspace to Next"; dispatcher = "movecurrentworkspacetomonitor"; args = "+1";}
+        {mods = "$modifier SHIFT CONTROL"; key = "h"; description = "Workspace to Previous"; dispatcher = "movecurrentworkspacetomonitor"; args = "-1";}
         # ============= WINDOW CYCLING =============
-        "ALT,Tab, Cycle Next Window, cyclenext"
-        "ALT,Tab, Bring Active To Top, bringactivetotop"
+        {mods = "ALT"; key = "Tab"; description = "Cycle Next Window"; dispatcher = "cyclenext";}
+        {mods = "ALT"; key = "Tab"; description = "Bring Active To Top"; dispatcher = "bringactivetotop";}
         # ============= MEDIA & HARDWARE CONTROLS =============
-        ",XF86AudioRaiseVolume, Volume Up, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+"
-        ",XF86AudioLowerVolume, Volume Down, exec, wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-        " ,XF86AudioMute, Mute Toggle, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-        ",XF86AudioPlay, Play Pause, exec, playerctl play-pause"
-        ",XF86AudioPause, Play Pause, exec, playerctl play-pause"
-        ",XF86AudioNext, Next Track, exec, playerctl next"
-        ",XF86AudioPrev, Previous Track, exec, playerctl previous"
-        ",XF86MonBrightnessDown, Brightness Down, exec, brightnessctl set 5%-"
-        ",XF86MonBrightnessUp, Brightness Up, exec, brightnessctl set +5%"
+        {mods = ""; key = "XF86AudioRaiseVolume"; description = "Volume Up"; dispatcher = "exec"; args = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+";}
+        {mods = ""; key = "XF86AudioLowerVolume"; description = "Volume Down"; dispatcher = "exec"; args = "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-";}
+        {mods = ""; key = "XF86AudioMute"; description = "Mute Toggle"; dispatcher = "exec"; args = "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle";}
+        {mods = ""; key = "XF86AudioPlay"; description = "Play Pause"; dispatcher = "exec"; args = "playerctl play-pause";}
+        {mods = ""; key = "XF86AudioPause"; description = "Play Pause"; dispatcher = "exec"; args = "playerctl play-pause";}
+        {mods = ""; key = "XF86AudioNext"; description = "Next Track"; dispatcher = "exec"; args = "playerctl next";}
+        {mods = ""; key = "XF86AudioPrev"; description = "Previous Track"; dispatcher = "exec"; args = "playerctl previous";}
+        {mods = ""; key = "XF86MonBrightnessDown"; description = "Brightness Down"; dispatcher = "exec"; args = "brightnessctl set 5%-";}
+        {mods = ""; key = "XF86MonBrightnessUp"; description = "Brightness Up"; dispatcher = "exec"; args = "brightnessctl set +5%";}
       ];
 
     bindm = [
-      "$modifier, mouse:272, movewindow"
-      "$modifier, mouse:273, resizewindow"
+      {mods = "$modifier"; key = "mouse:272"; dispatcher = "movewindow";}
+      {mods = "$modifier"; key = "mouse:273"; dispatcher = "resizewindow";}
     ];
   };
 }
