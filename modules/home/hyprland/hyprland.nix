@@ -59,9 +59,78 @@
     (import ./exec-once.nix {inherit zaneyos;}).wayland.windowManager.hyprland.settings.exec-once
       or []
   );
+  # Animation presets are authored as hyprlang CSV strings. Parse them into
+  # structured records at build time so lua/animations.lua does no parsing and
+  # every existing preset (animations-*.nix) keeps working unchanged.
+  isNumeric = s: builtins.match "-?[0-9]+(\\.[0-9]+)?" s != null;
+  toNum = s: builtins.fromJSON s;
+  toBoolean = v: let
+    n = lib.toLower (lib.strings.trim v);
+  in
+    if n == "1" || n == "true" || n == "yes" || n == "on"
+    then true
+    else if n == "0" || n == "false" || n == "no" || n == "off"
+    then false
+    else null;
+  stripComment = f: let
+    m = builtins.match "([^#]*)#.*" f;
+  in
+    if m == null
+    then f
+    else builtins.head m;
+  splitCsv = entry:
+    builtins.filter (s: s != "") (
+      map (f: lib.strings.trim (stripComment f)) (lib.splitString "," entry)
+    );
+  parseCurve = entry: let
+    parts = splitCsv entry;
+  in
+    if builtins.length parts < 5
+    then null
+    else if !(builtins.all isNumeric (map (i: builtins.elemAt parts i) [1 2 3 4]))
+    then null
+    else {
+      name = builtins.elemAt parts 0;
+      points = [
+        [(toNum (builtins.elemAt parts 1)) (toNum (builtins.elemAt parts 2))]
+        [(toNum (builtins.elemAt parts 3)) (toNum (builtins.elemAt parts 4))]
+      ];
+    };
+  parseAnimation = entry: let
+    parts = splitCsv entry;
+    len = builtins.length parts;
+    enabledRaw = toBoolean (builtins.elemAt parts 1);
+    speedStr = builtins.elemAt parts 2;
+    style =
+      if len > 4
+      then lib.strings.trim (lib.concatStringsSep ", " (lib.drop 4 parts))
+      else "";
+  in
+    if len < 4
+    then null
+    else
+      {
+        leaf = builtins.elemAt parts 0;
+        enabled =
+          if enabledRaw == null
+          then true
+          else enabledRaw;
+        speed =
+          if isNumeric speedStr
+          then toNum speedStr
+          else speedStr;
+        bezier = builtins.elemAt parts 3;
+      }
+      // lib.optionalAttrs (style != "") {inherit style;};
+
   animationSettings = (
     (import zaneyos.animChoice {}).wayland.windowManager.hyprland.settings.animations or {}
   );
+  animations = {
+    enabled = animationSettings.enabled or true;
+    bezier = builtins.filter (c: c != null) (map parseCurve (animationSettings.bezier or []));
+    animation = builtins.filter (a: a != null) (map parseAnimation (animationSettings.animation or []));
+  };
   windowRules = (
     (import ./windowrules.nix {}).wayland.windowManager.hyprland.settings.windowRules or []
   );
@@ -139,11 +208,7 @@
     bindd = binddEntries;
     bindm = bindmEntries;
     monitors = monitors;
-    animation = {
-      enabled = animationSettings.enabled or true;
-      bezier = animationSettings.bezier or [];
-      animation = animationSettings.animation or [];
-    };
+    animation = animations;
     windowRules = windowRules;
   };
 in {
