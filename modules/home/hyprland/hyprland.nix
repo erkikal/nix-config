@@ -62,8 +62,8 @@
   animationSettings = (
     (import zaneyos.animChoice {}).wayland.windowManager.hyprland.settings.animations or {}
   );
-  windowRulesHyprlang = (
-    (import ./windowrules.nix {}).wayland.windowManager.hyprland.extraConfig or ""
+  windowRules = (
+    (import ./windowrules.nix {}).wayland.windowManager.hyprland.settings.windowRules or []
   );
 
   monitorLines =
@@ -96,7 +96,7 @@
       bezier = animationSettings.bezier or [];
       animation = animationSettings.animation or [];
     };
-    windowRulesHyprlang = windowRulesHyprlang;
+    windowRules = windowRules;
   };
 in {
   home.packages = with pkgs; [
