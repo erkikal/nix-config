@@ -66,13 +66,61 @@
     (import ./windowrules.nix {}).wayland.windowManager.hyprland.settings.windowRules or []
   );
 
-  monitorLines =
+  # Parse a raw hyprlang "monitor = OUT,MODE,POS,SCALE[,transform,N,...]" line
+  # into a structured record at build time so lua/monitors.lua does no parsing.
+  # Trailing "keyword,value" pairs (transform, vrr, bitdepth, ...) are folded in;
+  # only transform is surfaced today - extend here as hosts need more.
+  parseMonitor = raw: let
+    afterKw = lib.strings.trim (lib.removePrefix "monitor" (lib.strings.trim raw));
+    body = lib.strings.trim (lib.removePrefix "=" afterKw);
+    fields = map lib.strings.trim (lib.splitString "," body);
+    field = i:
+      if builtins.length fields > i
+      then builtins.elemAt fields i
+      else "";
+    extras =
+      if builtins.length fields > 4
+      then lib.drop 4 fields
+      else [];
+    pairsToAttrs = acc: xs:
+      if builtins.length xs >= 2
+      then
+        pairsToAttrs (acc // {${builtins.elemAt xs 0} = builtins.elemAt xs 1;})
+        (lib.drop 2 xs)
+      else acc;
+    extraAttrs = pairsToAttrs {} extras;
+  in
+    {
+      output = field 0;
+      mode = field 1;
+      position = field 2;
+      scale = field 3;
+    }
+    // lib.optionalAttrs (extraAttrs ? transform) {
+      transform = lib.toInt extraAttrs.transform;
+    };
+
+  monitors =
     [
-      "monitor=,preferred,auto,auto"
-      "monitor=Virtual-1,1920x1080@60,auto,1"
+      # Catch-all default. Kept for parity with the previous config; it carries
+      # an empty output and is skipped by monitors.lua, matching prior behavior.
+      {
+        output = "";
+        mode = "preferred";
+        position = "auto";
+        scale = "auto";
+      }
+      {
+        output = "Virtual-1";
+        mode = "1920x1080@60";
+        position = "auto";
+        scale = "1";
+      }
     ]
-    ++ builtins.filter (line: line != "") (
-      map lib.strings.trim (lib.splitString "\n" extraMonitorSettings)
+    ++ map parseMonitor (
+      builtins.filter (line: line != "") (
+        map lib.strings.trim (lib.splitString "\n" extraMonitorSettings)
+      )
     );
 
   zaneyosLuaConfig = {
@@ -90,7 +138,7 @@
     execOnce = execOnceEntries;
     bindd = binddEntries;
     bindm = bindmEntries;
-    monitorLines = monitorLines;
+    monitors = monitors;
     animation = {
       enabled = animationSettings.enabled or true;
       bezier = animationSettings.bezier or [];

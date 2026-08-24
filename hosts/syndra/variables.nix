@@ -32,7 +32,7 @@
   extraMonitorSettings = "
     monitor = desc:Xiaomi Corporation Mi Monitor 5744900025769,2560x1440@144,0x240,1
     monitor = desc:Dell Inc. DELL P2314H J8J3147FB0EB,1920x1080@60,2560x420,1
-    monitor = desc:Dell Inc. DELL U2412M Y1H5T17T123L,1920x1200@60,4480x0,1
+    monitor = desc:Dell Inc. DELL U2412M Y1H5T17T123L,1920x1200@60,4480x0,1,transform,1
   ";
 
   # Bar/Shell Settings
