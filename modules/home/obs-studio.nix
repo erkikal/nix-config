@@ -7,7 +7,7 @@
       obs-pipewire-audio-capture
       obs-vkcapture
       obs-source-clone
-      obs-move-transition
+      # obs-move-transition
       obs-composite-blur
       obs-backgroundremoval
     ];
