@@ -25,7 +25,7 @@
   services = {
     flatpak = {
       packages = [
-        "com.core447.StreamController"
+        # "com.core447.StreamController"
         "com.chatterino.chatterino"
         # "com.rustdesk.RustDesk"
         "me.amankhanna.opendeck"

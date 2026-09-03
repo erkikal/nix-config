@@ -4,6 +4,6 @@
     ./hyprland.nix
     ./hyprlock.nix
     # ./windowrules.nix
-    # ./workspaces.nix
+    ./workspaces.nix
   ];
 }
