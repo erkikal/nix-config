@@ -32,6 +32,8 @@
     };
   };
 
+  services.openxlr.enable = true;
+
   services.ratbagd.enable = true;
   services.auto-cpufreq.enable = false;
   services.auto-cpufreq.settings = {

@@ -35,6 +35,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     herdr.url = "github:herdrdev/herdr/v0.8.0";
+    openxlr.url = "github:emaspa/openxlr";
   };
 
   outputs = {
@@ -44,6 +45,7 @@
     nix-flatpak,
     alejandra,
     herdr,
+    openxlr,
     ...
   } @ inputs: let
     system = "x86_64-linux";
@@ -65,6 +67,7 @@
           ./modules/core/overlays.nix
           ./profiles/${gpuProfile}
           nix-flatpak.nixosModules.nix-flatpak
+          openxlr.nixosModules.default
         ];
       };
   in {
