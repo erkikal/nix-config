@@ -33,11 +33,13 @@ in {
         "qs -c overview" # Start quickshell-overview daemon
         "hyprland-change-layout init"
 
-        "[workspace 6 silent] discord"
-        "[workspace 6 silent] Telegram"
-        "[workspace 7 silent] com.chatterino.chatterino"
-        "[workspace 7 silent] spotify"
-        "[workspace 8 silent] steam"
+        # Apps are launched plainly here; workspace placement is handled by
+        # window rules (see windowrules.nix / lua/window_rules.lua).
+        "discord"
+        "telegram-desktop"
+        "flatpak run com.chatterino.chatterino"
+        "spotify"
+        "steam"
       ]
       ++ noctaliaExec ++ waybarExec;
   };
