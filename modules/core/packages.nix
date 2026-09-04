@@ -93,7 +93,13 @@ in {
       pandoc # format MD to HTML for cheatsheet parser
       pavucontrol # For Editing Audio Levels & Devices
       pciutils # Collection Of Tools For Inspecting PCI Devices
-      picard # For Changing Music Metadata & Getting Cover Art
+      # picard temporarily disabled: it is the only consumer of PyQt5 here, and
+      # python3Packages.sip 6.15.1 -> 6.16.1 (nixpkgs PR #558075, for GCC 16)
+      # targets ABI v12, which PyQt5 5.15.10 rejects - the build dies with
+      # "ABI v12 is being targeted but the PyQt5.QtCore module doesn't support it".
+      # Upstream fix is merged but has not reached nixos-unstable yet; see
+      # nixpkgs#559458. Re-enable once it lands.
+      # picard # For Changing Music Metadata & Getting Cover Art
       pkg-config # Wrapper Script For Allowing Packages To Get Info On Others
       playerctl # Allows Changing Media Volume Through Scripts
       rhythmbox # audio player
