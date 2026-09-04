@@ -10,11 +10,11 @@ _: {
   wayland.windowManager.hyprland.settings.windowRules = [
     # Dialog boxes / modals
     {
-      match = {modal = 1;};
+      match = {modal = true;};
       float = true;
     }
     {
-      match = {modal = 1;};
+      match = {modal = true;};
       center = true;
     }
 
@@ -22,7 +22,7 @@ _: {
       name = "Resolve";
       match = {
         class = "^(\\bresolve\\b)$";
-        xwayland = 1;
+        xwayland = true;
       };
       no_blur = true;
     }
@@ -198,7 +198,7 @@ _: {
       float = true;
       move = "72% 7%";
       opacity = "0.95 0.75";
-      pin = 0;
+      pin = false;
       keep_aspect_ratio = true;
     }
     {
@@ -220,17 +220,17 @@ _: {
     # ============= IDLE INHIBIT =============
     {
       name = "IdleInhibit-fullscreen-1";
-      match = {class = "^(*)$";};
+      match = {class = ".*";};
       idle_inhibit = "fullscreen";
     }
     {
       name = "IdleInhibit-fullscreen-2";
-      match = {title = "^(*)$";};
+      match = {title = ".*";};
       idle_inhibit = "fullscreen";
     }
     {
       name = "IdleInhibit-fullscreen-3";
-      match = {fullscreen = 1;};
+      match = {fullscreen = true;};
       idle_inhibit = "fullscreen";
     }
 
