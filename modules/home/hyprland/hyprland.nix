@@ -357,7 +357,6 @@ in {
       require("zaneyos.animations")
       require("zaneyos.startup")
       require("zaneyos.keybinds")
-      -- require("zaneyos.workspace_rules")
     '';
     extraLuaFiles = {
       "zaneyos.vars" = {
@@ -381,10 +380,6 @@ in {
       "zaneyos.animations" = {
         autoLoad = false;
         content = ./lua/animations.lua;
-      };
-      "zaneyos.workspace_rules" = {
-        autoLoad = false;
-        content = ./lua/workspace_rules.lua;
       };
       "zaneyos.startup" = {
         autoLoad = false;
