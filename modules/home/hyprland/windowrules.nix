@@ -113,8 +113,14 @@ _: {
       tag = "+im";
     }
     {
+      # Matchers are RE2 FullMatch (matchEngine/RegexMatchEngine.cpp), so the
+      # pattern must cover the WHOLE class - "^([Cc]hatterino)" never matched the
+      # Flatpak class com.chatterino.chatterino. Until this was fixed, +chat was
+      # never applied and the chat* -> ws 7 rule below never fired; Chatterino only
+      # appeared on ws 7 because a preceding non-silent workspace rule had focused
+      # it. The bare form is kept for the non-Flatpak package.
       name = "Chatterino";
-      match = {class = "^([Cc]hatterino)";};
+      match = {class = "^(com\\.chatterino\\.chatterino|[Cc]hatterino)$";};
       tag = "+chat";
     }
 
@@ -147,18 +153,18 @@ _: {
     }
 
     # ============= MEDIA / DEVICE CONTROL =============
-    # Class regexes here are deliberately permissive: neither OpenXLR (Avalonia/.NET,
-    # its packaging/openxlr.desktop declares no StartupWMClass) nor OpenDeck (Tauri,
-    # run under Flatpak) advertises its Wayland app_id, so both the product name and
-    # the reverse-DNS id are matched. Confirm with `hyprctl clients -j` and tighten.
+    # Classes below are the values observed via `hyprctl clients -j` on syndra, not
+    # inferred: OpenXLR reports its Avalonia assembly name "OpenXLR.UI" (its
+    # packaging/openxlr.desktop declares no StartupWMClass) and OpenDeck reports the
+    # bare Tauri product id "opendeck" rather than its Flatpak reverse-DNS id.
     {
       name = "OpenXLR";
-      match = {class = "^([Oo]pen[Xx][Ll][Rr].*|com\\.emaspa\\.openxlr)$";};
+      match = {class = "^(OpenXLR(\\.UI)?)$";};
       workspace = 5;
     }
     {
       name = "OpenDeck";
-      match = {class = "^([Oo]pen[Dd]eck|me\\.amankhanna\\.opendeck)$";};
+      match = {class = "^([Oo]pen[Dd]eck)$";};
       workspace = 5;
     }
     {
