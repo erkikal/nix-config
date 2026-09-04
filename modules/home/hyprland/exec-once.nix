@@ -40,6 +40,11 @@ in {
         "flatpak run com.chatterino.chatterino"
         "spotify"
         "steam"
+        # OpenXLR GUI only - the daemon autostarts as a systemd user service via
+        # services.openxlr.enable (hosts/syndra/host-packages.nix) and keeps running
+        # with the window closed, so it must not be launched here.
+        "openxlr"
+        "flatpak run me.amankhanna.opendeck"
       ]
       ++ noctaliaExec ++ waybarExec;
   };

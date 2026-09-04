@@ -146,6 +146,27 @@ _: {
       tag = "+gamestore";
     }
 
+    # ============= MEDIA / DEVICE CONTROL =============
+    # Class regexes here are deliberately permissive: neither OpenXLR (Avalonia/.NET,
+    # its packaging/openxlr.desktop declares no StartupWMClass) nor OpenDeck (Tauri,
+    # run under Flatpak) advertises its Wayland app_id, so both the product name and
+    # the reverse-DNS id are matched. Confirm with `hyprctl clients -j` and tighten.
+    {
+      name = "OpenXLR";
+      match = {class = "^([Oo]pen[Xx][Ll][Rr].*|com\\.emaspa\\.openxlr)$";};
+      workspace = 5;
+    }
+    {
+      name = "OpenDeck";
+      match = {class = "^([Oo]pen[Dd]eck|me\\.amankhanna\\.opendeck)$";};
+      workspace = 5;
+    }
+    {
+      name = "Spotify";
+      match = {class = "^([Ss]potify)$";};
+      workspace = 7;
+    }
+
     # ============= TAGGING: SETTINGS =============
     {
       name = "gnome-disks";
