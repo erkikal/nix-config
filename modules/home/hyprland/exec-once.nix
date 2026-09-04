@@ -34,7 +34,7 @@ in {
         "hyprland-change-layout init"
 
         # Apps are launched plainly here; workspace placement is handled by
-        # window rules (see windowrules.nix / lua/window_rules.lua).
+        # window rules (see windowrules.nix).
         "discord"
         "telegram-desktop"
         "flatpak run com.chatterino.chatterino"

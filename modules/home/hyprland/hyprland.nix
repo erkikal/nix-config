@@ -229,9 +229,10 @@
     bezier = builtins.filter (c: c != null) (map parseCurve (animationSettings.bezier or []));
     animation = builtins.filter (a: a != null) (map parseAnimation (animationSettings.animation or []));
   };
-  windowRules = (
-    (import ./windowrules.nix {}).wayland.windowManager.hyprland.settings.windowRules or []
-  );
+  # Window rules live in windowrules.nix, which is imported as its own module in
+  # default.nix. Under configType = "lua" home-manager emits each settings.window_rule
+  # element as hl.window_rule(...) directly, so no data import / ZANEYOS folding /
+  # custom lua consumer is needed here.
 
   # Parse a raw hyprlang "monitor = OUT,MODE,POS,SCALE[,transform,N,...]" line
   # into a structured record at build time so lua/monitors.lua does no parsing.
@@ -307,7 +308,6 @@
     bindm = bindmEntries;
     monitors = monitors;
     animation = animations;
-    windowRules = windowRules;
   };
 in {
   home.packages = with pkgs; [
@@ -355,7 +355,6 @@ in {
       require("zaneyos.monitors")
       require("zaneyos.env")
       require("zaneyos.animations")
-      require("zaneyos.window_rules")
       require("zaneyos.startup")
       require("zaneyos.keybinds")
       -- require("zaneyos.workspace_rules")
@@ -382,10 +381,6 @@ in {
       "zaneyos.animations" = {
         autoLoad = false;
         content = ./lua/animations.lua;
-      };
-      "zaneyos.window_rules" = {
-        autoLoad = false;
-        content = ./lua/window_rules.lua;
       };
       "zaneyos.workspace_rules" = {
         autoLoad = false;

@@ -1,13 +1,18 @@
 _: {
   # Hyprland window rules.
   #
-  # Authored as native Nix records that map 1:1 onto the table hl.window_rule()
-  # expects: `match` holds the matchers, every other key is a rule property.
-  # There is no runtime hyprlang parsing - lua/window_rules.lua just iterates
-  # this list. Conventions carried over from the previous hyprlang form:
+  # This is a real home-manager module (imported in default.nix). Under
+  # configType = "lua", home-manager emits every element of settings.window_rule
+  # as its own hl.window_rule(<table>) call, in list order - so the records here
+  # map 1:1 onto the table hl.window_rule() expects: `match` holds the matchers,
+  # every other key is a rule property. No runtime parsing and no custom lua
+  # consumer. Conventions carried over from the previous hyprlang form:
   #   on/off  -> true/false
   #   "60% 70%" is the hyprlang "60% = 70%" (two-value props: size/opacity/move)
-  wayland.windowManager.hyprland.settings.windowRules = [
+  #
+  # `name` is a UNIQUE KEY: hl.window_rule() merges rules that share a name
+  # (matchers and effects accumulate onto one rule). Keep every name distinct.
+  wayland.windowManager.hyprland.settings.window_rule = [
     # Dialog boxes / modals
     {
       match = {modal = true;};
@@ -271,7 +276,11 @@ _: {
       float = true;
     }
     {
-      name = "Steam";
+      # Distinct name from the "Steam" workspace rule above: hl.window_rule() treats
+      # `name` as a unique key and MERGES rules that share one. Reusing "Steam" here
+      # would fold this title-negative matcher into the workspace rule, so the main
+      # Steam window (title "Steam") would no longer match -> workspace 8 never applied.
+      name = "Steam-dialogs";
       match = {
         class = "^([Ss]team)$";
         title = "negative:^([Ss]team)$";
@@ -312,7 +321,11 @@ _: {
       workspace = 6;
     }
     {
-      name = "Chatterino";
+      # Distinct name from the "Chatterino" tagging rule above (see the Steam note):
+      # sharing "Chatterino" merged the two into a rule requiring class=chatterino AND
+      # tag=chat* before applying tag +chat - a chicken-and-egg that never fired, so
+      # workspace 7 never applied.
+      name = "Chatterino-workspace";
       match = {tag = "chat*";};
       opacity = "0.94 0.86";
       workspace = 7;
