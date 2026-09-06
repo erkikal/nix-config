@@ -33,11 +33,18 @@ in {
         "qs -c overview" # Start quickshell-overview daemon
         "hyprland-change-layout init"
 
-        "[workspace 6 silent] discord"
-        "[workspace 6 silent] Telegram"
-        "[workspace 7 silent] com.chatterino.chatterino"
-        "[workspace 7 silent] spotify"
-        "[workspace 8 silent] steam"
+        # Apps are launched plainly here; workspace placement is handled by
+        # window rules (see windowrules.nix).
+        "discord"
+        "telegram-desktop"
+        "flatpak run com.chatterino.chatterino"
+        "spotify"
+        "steam"
+        # OpenXLR GUI only - the daemon autostarts as a systemd user service via
+        # services.openxlr.enable (hosts/syndra/host-packages.nix) and keeps running
+        # with the window closed, so it must not be launched here.
+        "openxlr"
+        "flatpak run me.amankhanna.opendeck"
       ]
       ++ noctaliaExec ++ waybarExec;
   };

@@ -11,6 +11,8 @@ in {
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
+    # Let Atuin own Ctrl-R for history search; fzf keeps its other widgets (Ctrl-T, Alt-C).
+    historyWidget.zsh.command = "";
     colors = lib.mkForce {
       "fg+" = accent;
       "bg+" = "-1";

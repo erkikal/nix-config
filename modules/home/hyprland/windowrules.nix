@@ -1,20 +1,25 @@
 _: {
   # Hyprland window rules.
   #
-  # Authored as native Nix records that map 1:1 onto the table hl.window_rule()
-  # expects: `match` holds the matchers, every other key is a rule property.
-  # There is no runtime hyprlang parsing - lua/window_rules.lua just iterates
-  # this list. Conventions carried over from the previous hyprlang form:
+  # This is a real home-manager module (imported in default.nix). Under
+  # configType = "lua", home-manager emits every element of settings.window_rule
+  # as its own hl.window_rule(<table>) call, in list order - so the records here
+  # map 1:1 onto the table hl.window_rule() expects: `match` holds the matchers,
+  # every other key is a rule property. No runtime parsing and no custom lua
+  # consumer. Conventions carried over from the previous hyprlang form:
   #   on/off  -> true/false
   #   "60% 70%" is the hyprlang "60% = 70%" (two-value props: size/opacity/move)
-  wayland.windowManager.hyprland.settings.windowRules = [
+  #
+  # `name` is a UNIQUE KEY: hl.window_rule() merges rules that share a name
+  # (matchers and effects accumulate onto one rule). Keep every name distinct.
+  wayland.windowManager.hyprland.settings.window_rule = [
     # Dialog boxes / modals
     {
-      match = {modal = 1;};
+      match = {modal = true;};
       float = true;
     }
     {
-      match = {modal = 1;};
+      match = {modal = true;};
       center = true;
     }
 
@@ -22,7 +27,7 @@ _: {
       name = "Resolve";
       match = {
         class = "^(\\bresolve\\b)$";
-        xwayland = 1;
+        xwayland = true;
       };
       no_blur = true;
     }
@@ -108,8 +113,14 @@ _: {
       tag = "+im";
     }
     {
+      # Matchers are RE2 FullMatch (matchEngine/RegexMatchEngine.cpp), so the
+      # pattern must cover the WHOLE class - "^([Cc]hatterino)" never matched the
+      # Flatpak class com.chatterino.chatterino. Until this was fixed, +chat was
+      # never applied and the chat* -> ws 7 rule below never fired; Chatterino only
+      # appeared on ws 7 because a preceding non-silent workspace rule had focused
+      # it. The bare form is kept for the non-Flatpak package.
       name = "Chatterino";
-      match = {class = "^([Cc]hatterino)";};
+      match = {class = "^(com\\.chatterino\\.chatterino|[Cc]hatterino)$";};
       tag = "+chat";
     }
 
@@ -139,6 +150,27 @@ _: {
       name = "heroicgameslauncher";
       match = {class = "^(com.heroicgameslauncher.hgl)$";};
       tag = "+gamestore";
+    }
+
+    # ============= MEDIA / DEVICE CONTROL =============
+    # Classes below are the values observed via `hyprctl clients -j` on syndra, not
+    # inferred: OpenXLR reports its Avalonia assembly name "OpenXLR.UI" (its
+    # packaging/openxlr.desktop declares no StartupWMClass) and OpenDeck reports the
+    # bare Tauri product id "opendeck" rather than its Flatpak reverse-DNS id.
+    {
+      name = "OpenXLR";
+      match = {class = "^(OpenXLR(\\.UI)?)$";};
+      workspace = 5;
+    }
+    {
+      name = "OpenDeck";
+      match = {class = "^([Oo]pen[Dd]eck)$";};
+      workspace = 5;
+    }
+    {
+      name = "Spotify";
+      match = {class = "^([Ss]potify)$";};
+      workspace = 7;
     }
 
     # ============= TAGGING: SETTINGS =============
@@ -198,7 +230,7 @@ _: {
       float = true;
       move = "72% 7%";
       opacity = "0.95 0.75";
-      pin = 0;
+      pin = false;
       keep_aspect_ratio = true;
     }
     {
@@ -220,17 +252,17 @@ _: {
     # ============= IDLE INHIBIT =============
     {
       name = "IdleInhibit-fullscreen-1";
-      match = {class = "^(*)$";};
+      match = {class = ".*";};
       idle_inhibit = "fullscreen";
     }
     {
       name = "IdleInhibit-fullscreen-2";
-      match = {title = "^(*)$";};
+      match = {title = ".*";};
       idle_inhibit = "fullscreen";
     }
     {
       name = "IdleInhibit-fullscreen-3";
-      match = {fullscreen = 1;};
+      match = {fullscreen = true;};
       idle_inhibit = "fullscreen";
     }
 
@@ -271,7 +303,11 @@ _: {
       float = true;
     }
     {
-      name = "Steam";
+      # Distinct name from the "Steam" workspace rule above: hl.window_rule() treats
+      # `name` as a unique key and MERGES rules that share one. Reusing "Steam" here
+      # would fold this title-negative matcher into the workspace rule, so the main
+      # Steam window (title "Steam") would no longer match -> workspace 8 never applied.
+      name = "Steam-dialogs";
       match = {
         class = "^([Ss]team)$";
         title = "negative:^([Ss]team)$";
@@ -312,7 +348,11 @@ _: {
       workspace = 6;
     }
     {
-      name = "Chatterino";
+      # Distinct name from the "Chatterino" tagging rule above (see the Steam note):
+      # sharing "Chatterino" merged the two into a rule requiring class=chatterino AND
+      # tag=chat* before applying tag +chat - a chicken-and-egg that never fired, so
+      # workspace 7 never applied.
+      name = "Chatterino-workspace";
       match = {tag = "chat*";};
       opacity = "0.94 0.86";
       workspace = 7;
