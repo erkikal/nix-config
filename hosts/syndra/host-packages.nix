@@ -32,29 +32,29 @@
         "com.github.tchx84.Flatseal"
       ];
     };
-  };
 
-  services.openxlr.enable = true;
+    openxlr.enable = true;
 
-  services.ratbagd.enable = true;
-  services.auto-cpufreq.enable = false;
-  services.auto-cpufreq.settings = {
-    battery = {
-      governor = "powersave";
-      turbo = "never";
+    ratbagd.enable = true;
+    auto-cpufreq.enable = false;
+    auto-cpufreq.settings = {
+      battery = {
+        governor = "powersave";
+        turbo = "never";
+      };
+      charger = {
+        governor = "performance";
+        turbo = "auto";
+      };
     };
-    charger = {
-      governor = "performance";
-      turbo = "auto";
+
+    # onedrive.enable = true;
+
+    sunshine = {
+      enable = true;
+      autoStart = true;
+      capSysAdmin = true; # only needed for Wayland -- omit this when using with Xorg
+      openFirewall = true;
     };
-  };
-
-  # services.onedrive.enable = true;
-
-  services.sunshine = {
-    enable = true;
-    autoStart = true;
-    capSysAdmin = true; # only needed for Wayland -- omit this when using with Xorg
-    openFirewall = true;
   };
 }
