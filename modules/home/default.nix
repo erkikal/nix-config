@@ -58,6 +58,7 @@ in {
       ./swappy.nix
       ./swaync.nix
       ./tealdeer.nix
+      ./tuicr.nix
       ./virtmanager.nix
       barModule
       ./wlogout
