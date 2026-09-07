@@ -27,7 +27,7 @@
       packages = [
         # "com.core447.StreamController"
         "com.chatterino.chatterino"
-        # "com.rustdesk.RustDesk"
+        "com.rustdesk.RustDesk"
         "me.amankhanna.opendeck"
         "com.github.tchx84.Flatseal"
       ];
