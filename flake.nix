@@ -36,6 +36,7 @@
     };
     herdr.url = "github:herdrdev/herdr/v0.8.0";
     openxlr.url = "github:emaspa/openxlr";
+    sofka.url = "github:nklmilojevic/sofka";
   };
 
   outputs = {

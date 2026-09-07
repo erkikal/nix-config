@@ -52,6 +52,7 @@ in {
       ./qt.nix
       ./scripts
       ./scripts/gemini-cli.nix
+      ./sofka.nix
       ./starship.nix
       ./stylix.nix
       ./swappy.nix
