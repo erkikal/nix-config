@@ -5,6 +5,7 @@
     settings = {
       secrets_filter = true;
       enter_accept = true;
+      pty_proxy.enabled = true;
     };
   };
 }

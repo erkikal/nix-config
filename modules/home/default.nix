@@ -41,6 +41,7 @@ in {
       ./gtk.nix
       ./cli/htop.nix
       ./hyprland
+      ./kdeconnect.nix
       ./terminals/kitty.nix
       ./cli/lazygit.nix
       ./obs-studio.nix
@@ -51,11 +52,13 @@ in {
       ./qt.nix
       ./scripts
       ./scripts/gemini-cli.nix
+      ./sofka.nix
       ./starship.nix
       ./stylix.nix
       ./swappy.nix
       ./swaync.nix
       ./tealdeer.nix
+      ./tuicr.nix
       ./virtmanager.nix
       barModule
       ./wlogout
