@@ -8,6 +8,7 @@
     audacity
     ddcutil
     discord
+    doggo
     ferium
     i2c-tools
     keepassxc
