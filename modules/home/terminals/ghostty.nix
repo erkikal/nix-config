@@ -32,6 +32,10 @@ in {
     };
   };
 
+  home.sessionVariables = {
+    GTK_IM_MODULE = "simple";
+  };
+
   programs.ghostty = {
     enable = true;
     package = pkgs.ghostty;
