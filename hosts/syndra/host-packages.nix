@@ -10,6 +10,7 @@
     discord
     doggo
     ferium
+    heroic
     i2c-tools
     keepassxc
     keymapp
