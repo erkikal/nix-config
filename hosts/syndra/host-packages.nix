@@ -10,6 +10,7 @@
     discord
     doggo
     ferium
+    gale
     heroic
     i2c-tools
     keepassxc
