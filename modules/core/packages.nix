@@ -52,7 +52,7 @@ in {
       alejandra # nix formatter
       amfora # Fancy Terminal Browser For Gemini Protocol
       appimage-run # Needed For AppImage Support
-      brave # Brave Browser
+      # brave # Brave Browser
       brightnessctl # For Screen Brightness Control
       cliamp # terminal music player
       cliphist # Clipboard manager using rofi menu
