@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   xdg.portal = {
     enable = true;
-    extraPortals = [pkgs.xdg-desktop-portal-hyprland];
+    extraPortals = [];
     configPackages = [pkgs.hyprland];
   };
   services = {
