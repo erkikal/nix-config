@@ -124,7 +124,7 @@
       then "wallpaper"
       else if isExec && anyInfix ["volume" "brightness" "audio" "xf86audio" "xf86monbrightness" "playerctl" "wpctl" "brightnessctl"] low
       then "media"
-      else if isExec && anyInfix ["browser" "chrome" "firefox" "brave"] low
+      else if isExec && anyInfix ["browser" "chrome" "firefox" "brave" "vivaldi"] low
       then "browser"
       else if builtins.elem act ["workspace" "movetoworkspace"]
       then "workspace"
