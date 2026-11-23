@@ -8,6 +8,9 @@ _: {
     hyprlock.enable = false;
     ghostty.enable = false;
     yazi.enable = false;
+    # wayprompt was removed from nixpkgs and home-manager; drop once Stylix removes the target
+    # (https://github.com/nix-community/stylix/pull/2557)
+    wayprompt.enable = false;
     qt = {
       enable = true;
       platform = "qtct";
