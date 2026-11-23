@@ -25,7 +25,7 @@ Project: ZaneyOS — NixOS flake for desktop systems with per-host overrides, GP
   - `modules/core/user.nix`: `programs.zsh.enable = true;` registered at system level to add `zsh` into `/etc/shells`, preventing PAM `pkexec` authentication failures.
   - `modules/home/stylix.nix`: `stylix.targets.yazi.enable = false;` to prevent Stylix theme generation collisions with custom `theme.toml`.
 - **Core Overlays**:
-  - `modules/core/overlays.nix`: Includes `dwarfs` 0.14.0 hotfix for GCC `<cstring>` (`#include <cstring>` in `folly/folly/lang/Exception.h`) with `fmt_11` and `-DENABLE_WERROR=OFF` needed by `gearlever`.
+  - `modules/core/overlays.nix`: Currently empty (`nixpkgs.overlays = [];`); previous workarounds were dropped once fixed upstream. Add temporary package overrides here.
 
 ### `zos-next` Branch (Next-Gen Architecture Branch)
 - **Architecture**: Host-centric modular configuration structure.
@@ -34,7 +34,6 @@ Project: ZaneyOS — NixOS flake for desktop systems with per-host overrides, GP
   - Stacks `./modules/core/overlays.nix`, `./modules/core`, `./modules/drivers`, `./hosts/${host}`, and `./profiles`.
 - **Parity with `lua`**:
   - Yazi configuration updated to the modular `xdg.configFile` TOML/Lua/plugins structure (matching `lua` and `ddubsos`).
-  - Dwarfs / Gearlever overlay incorporated in `modules/core/overlays.nix`.
   - Polkit `enablePkexecWrapper = true` and system-level `programs.zsh.enable = true` applied.
   - Stylix Yazi target disabled (`stylix.targets.yazi.enable = false`).
 
