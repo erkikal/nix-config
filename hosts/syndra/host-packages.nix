@@ -21,7 +21,6 @@
     nohang
     onedrive
     piper
-    rustdesk-flutter
     spotify
     telegram-desktop
     vivaldi
