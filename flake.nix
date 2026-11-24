@@ -37,6 +37,10 @@
     herdr.url = "github:herdrdev/herdr/v0.8.0";
     openxlr.url = "github:emaspa/openxlr";
     tuicr.url = "github:agavra/tuicr";
+    ardia = {
+      url = "github:Yucklys/ardia-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {

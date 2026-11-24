@@ -22,6 +22,26 @@
         "type": "github"
       }
     },
+    "ardia": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795376830,
+        "narHash": "sha256-AiBc6DiUjwvl7iv0qsLIMBSYZcT2QkynysM3G/P243w=",
+        "owner": "Yucklys",
+        "repo": "ardia-flake",
+        "rev": "4b1a5abffd4c06fa770098b7ffdbfb8baf59395f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Yucklys",
+        "repo": "ardia-flake",
+        "type": "github"
+      }
+    },
     "base16": {
       "inputs": {
         "fromYaml": "fromYaml"
@@ -608,6 +628,7 @@
     "root": {
       "inputs": {
         "alejandra": "alejandra",
+        "ardia": "ardia",
         "herdr": "herdr",
         "home-manager": "home-manager",
         "nix-flatpak": "nix-flatpak",

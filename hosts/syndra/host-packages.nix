@@ -1,10 +1,12 @@
 {
   configs,
   pkgs,
+  inputs,
   ...
 }: {
   environment.systemPackages = with pkgs; [
     #  Add local pacakaged here
+    inputs.ardia.packages.${pkgs.stdenv.hostPlatform.system}.ardia
     audacity
     ddcutil
     discord
