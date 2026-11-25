@@ -47,7 +47,7 @@
   # This does NOT install your browser
   # You need to install it by adding it to the `packages.nix`
   # or as a flatpak
-  browser = "vivaldi";
+  browser = "ardia";
 
   # Host-level default applications (picked up by Home Manager xdg.mimeApps)
   # Uncomment and adjust the .desktop IDs to set per-host defaults.
@@ -56,9 +56,9 @@
     #   "application/pdf" = ["okular.desktop"];
     #   "application/x-pdf" = ["okular.desktop"];
     #   # Web browser
-    "x-scheme-handler/http" = ["vivaldi-stable.desktop"]; # or brave-browser.desktop, firefox.desktop
-    "x-scheme-handler/https" = ["vivaldi-stable.desktop"];
-    #   "text/html"              = ["google-chrome.desktop"];
+    "x-scheme-handler/http" = ["ardia.desktop"]; # or brave-browser.desktop, firefox.desktop
+    "x-scheme-handler/https" = ["ardia.desktop"];
+    "text/html" = ["ardia.desktop"];
     #   # Files
     #   "inode/directory" = ["thunar.desktop"];      # file manager
     #   "text/plain"      = ["nvim.desktop"];        # or code.desktop
