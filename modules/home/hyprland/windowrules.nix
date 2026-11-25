@@ -61,6 +61,11 @@ _: {
       tag = "+browser";
     }
     {
+      name = "Ardia";
+      match = {class = "^([Aa]rdia)$";};
+      tag = "+browser";
+    }
+    {
       name = "Vivaldi";
       match = {class = "^([Vv]ivaldi(-beta|-dev|-unstable)?)$";};
       tag = "+browser";
